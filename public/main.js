@@ -24,9 +24,9 @@ $(function() {
   function addParticipantsMessage(data) {
     var message = "";
     if (data.numUsers === 1) {
-      message += "1 person on rizzcord";
+      message += "1 person on discord";
     } else {
-      message += data.numUsers + " people on rizzcord";
+      message += data.numUsers + " people on discord";
     }
     log(message);
   }
@@ -228,7 +228,7 @@ $(function() {
   socket.on("login", function(data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to RizzCord";
+    var message = "Welcome to Discord";
     log(message, {
       prepend: true
     });
