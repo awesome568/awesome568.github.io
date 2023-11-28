@@ -47,7 +47,7 @@ $(function() {
     }
   }
 
-// Sends a chat message
+  // Sends a chat message
   var lastMessageTime = 0;
 
   function sendMessage() {
@@ -57,7 +57,7 @@ $(function() {
     message = cleanInput(message);
     
     // if there is a non-empty message, a socket connection, and 2 seconds have passed since the last message
-    if (message && connected && (currentTime - lastMessageTime) >= 2000) {
+    if (message && connected && (currentTime - lastMessageTime) >= 1000) {
       lastMessageTime = currentTime;
       $inputMessage.val("");
       addChatMessage({
