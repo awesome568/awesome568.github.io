@@ -32,21 +32,31 @@ $(function() {
   }
 
   // Sets the client's username
-  function setUsername() {
-    username = cleanInput($usernameInput.val().trim());
+ // Sets the client's username
+function setUsername() {
+  var proposedUsername = cleanInput($usernameInput.val().trim());
 
-    // If the username is valid
-    if (username) {
-      $loginPage.fadeOut();
-      $chatPage.show();
-      $loginPage.off("click");
-      $currentInput = $inputMessage.focus();
+  // Check if the username is already taken
+  socket.emit("check username", proposedUsername, function(isAvailable) {
+    if (isAvailable) {
+      username = proposedUsername;
 
-      // Tell the server your username
-      socket.emit("add user", username);
+      // If the username is valid
+      if (username) {
+        $loginPage.fadeOut();
+        $chatPage.show();
+        $loginPage.off("click");
+        $currentInput = $inputMessage.focus();
+
+        // Tell the server your username
+        socket.emit("add user", username);
+      }
+    } else {
+      // Display an error or prompt the user to choose a different username
+      alert("Username is already taken. Please choose a different username.");
     }
-  }
-
+  });
+}
   // Sends a chat message
  var lastMessageTime = 0;
 
