@@ -15,57 +15,77 @@ app.use(express.static('public'));
 // Chatroom
 
 var numUsers = 0;
+var usedUsernames = new Set(); // Set to track used usernames
 
+// Function to check if a username is available
+function isUsernameAvailable(username) {
+  return !usedUsernames.has(username);
+}
+
+// Event handlers for socket connections
 io.on('connection', function (socket) {
   var addedUser = false;
 
-  // when the client emits 'new message', this listens and executes
+  // Event: new message
   socket.on('new message', function (data) {
-    // we tell the client to execute 'new message'
+    // Broadcast 'new message' event to all clients
     socket.broadcast.emit('new message', {
       username: socket.username,
       message: data
     });
   });
 
-  // when the client emits 'add user', this listens and executes
-  socket.on('add user', function (username) {
+  // Event: add user
+  socket.on('add user', function (username, callback) {
     if (addedUser) return;
 
-    // we store the username in the socket session for this client
-    socket.username = username;
-    ++numUsers;
-    addedUser = true;
-    socket.emit('login', {
-      numUsers: numUsers
-    });
-    // echo globally (all clients) that a person has connected
-    socket.broadcast.emit('user joined', {
-      username: socket.username,
-      numUsers: numUsers
-    });
+    // Check if the username is available
+    if (isUsernameAvailable(username)) {
+      // Set the username for the socket
+      socket.username = username;
+      ++numUsers;
+      addedUser = true;
+      usedUsernames.add(username); // Add the username to the set of used usernames
+
+      // Emit 'login' event to the current client
+      socket.emit('login', {
+        numUsers: numUsers
+      });
+
+      // Broadcast 'user joined' event to all clients
+      socket.broadcast.emit('user joined', {
+        username: socket.username,
+        numUsers: numUsers
+      });
+    } else {
+      // Inform the client that the username is already taken
+      callback(false);
+    }
   });
 
-  // when the client emits 'typing', we broadcast it to others
+  // Event: typing
   socket.on('typing', function () {
+    // Broadcast 'typing' event to all clients except the sender
     socket.broadcast.emit('typing', {
       username: socket.username
     });
   });
 
-  // when the client emits 'stop typing', we broadcast it to others
+  // Event: stop typing
   socket.on('stop typing', function () {
+    // Broadcast 'stop typing' event to all clients except the sender
     socket.broadcast.emit('stop typing', {
       username: socket.username
     });
   });
 
-  // when the user disconnects.. perform this
+  // Event: disconnect
   socket.on('disconnect', function () {
     if (addedUser) {
       --numUsers;
+      usedUsernames.delete(socket.username); // Remove the username from the set of used usernames
 
-      // echo globally that this client has left
+      // Broadcast 'user left' event to all clients
       socket.broadcast.emit('user left', {
         username: socket.username,
         numUsers: numUsers
