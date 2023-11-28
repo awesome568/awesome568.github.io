@@ -33,6 +33,7 @@ $(function() {
 
   // Sets the client's username
  // Sets the client's username
+// Sets the client's username
 function setUsername() {
   var proposedUsername = cleanInput($usernameInput.val().trim());
 
