@@ -48,21 +48,12 @@ $(function() {
   }
 
   // Sends a chat message
- $(function() {
-  // ... (existing code)
-
-  // Sends a chat message
-  var lastMessageTime = 0;
-
   function sendMessage() {
-    var currentTime = new Date().getTime();
     var message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
-    
-    // if there is a non-empty message, a socket connection, and 2 seconds have passed since the last message
-    if (message && connected && (currentTime - lastMessageTime) >= 900) {
-      lastMessageTime = currentTime;
+    // if there is a non-empty message and a socket connection
+    if (message && connected) {
       $inputMessage.val("");
       addChatMessage({
         username: username,
@@ -72,7 +63,6 @@ $(function() {
       socket.emit("new message", message);
     }
   }
-
 
   // Log a message
   function log(message, options) {
