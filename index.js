@@ -15,7 +15,6 @@ app.use(express.static('public'));
 // Chatroom
 
 var numUsers = 0;
-var usedUsernames = new Set(); // Set to track used usernames
 
 io.on('connection', function (socket) {
   var addedUser = false;
@@ -33,18 +32,10 @@ io.on('connection', function (socket) {
   socket.on('add user', function (username) {
     if (addedUser) return;
 
-    // Check if the username is already in use
-    if (usedUsernames.has(username)) {
-      // Inform the client that the username is already taken
-      socket.emit('username taken');
-      return;
-    }
-
     // we store the username in the socket session for this client
     socket.username = username;
     ++numUsers;
     addedUser = true;
-    usedUsernames.add(username); // Add the username to the set of used usernames
     socket.emit('login', {
       numUsers: numUsers
     });
@@ -73,7 +64,7 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function () {
     if (addedUser) {
       --numUsers;
-      usedUsernames.delete(socket.username); // Remove the username from the set
+
       // echo globally that this client has left
       socket.broadcast.emit('user left', {
         username: socket.username,
