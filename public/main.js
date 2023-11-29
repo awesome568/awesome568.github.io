@@ -24,9 +24,9 @@ $(function() {
   function addParticipantsMessage(data) {
     var message = "";
     if (data.numUsers === 1) {
-      message += "1 person on discord";
+      message += "1 person in chat";
     } else {
-      message += data.numUsers + " people on discord";
+      message += data.numUsers + " people in chat";
     }
     log(message);
   }
