@@ -233,7 +233,7 @@ $(function() {
   socket.on("login", function(data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to Discord";
+    var message = "Welcome to the gc";
     log(message, {
       prepend: true
     });
@@ -247,7 +247,7 @@ $(function() {
 
   // Whenever the server emits 'user joined', log it in the chat body
   socket.on("user joined", function(data) {
-    log(data.username + " opened RizzCord");
+    log(data.username + " opened the gc");
     addParticipantsMessage(data);
   });
 
